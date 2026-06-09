@@ -2396,7 +2396,7 @@ export default function App(){
         {section==="dashboard" && child && <Dashboard child={child} curWeek={curWeek} weekPlans={weekPlans} onLesson={openLesson} onSubject={openSubject} onToggle={toggleDone} onEdit={()=>{setEditC(child);setModal(true);}} />}
         {section==="schedule" && child && <ScheduleView child={child} curWeek={curWeek} weekPlans={weekPlans} onLesson={openLesson} onToggle={toggleDone} />}
         {section==="resources" && <ResourcesView />}
-        {section==="lessons" && <AllLessonsView child={child} subjects={getSubjectList(child.age)} onSubject={openSubject} />}
+        {section==="lessons" && <AllLessonsView child={child} subjects={getSubjectList(child?.age)} onSubject={openSubject} />}
         {section==="subject" && subjId && child && <SubjectView subj={getSubjectList(child.age).find(s=>s.id===subjId)} child={child} onBack={()=>setSection("lessons")} onLesson={lId=>openLesson(subjId,lId)} />}
         {section==="lesson" && child && (() => {
           // Resolve subj + lesson — works for both SUBJECTS lessons and inline (saint) lessons
@@ -3238,7 +3238,7 @@ function ProfileModal({existing,all,onClose,onSave,onDelete}){
         </label>
         <label style={{display:"block",marginBottom:"10px"}}>
           <span style={{fontSize:".82rem",fontWeight:700,display:"block",marginBottom:"4px"}}>Age</span>
-          <input type="number" min="3" max="14" value={age} onChange={e=>setAge(e.target.value)}
+          <input type="number" min="2" max="14" value={age} onChange={e=>setAge(e.target.value)}
             style={{width:"100%",padding:"9px 12px",borderRadius:"10px",border:`2.5px solid ${P.ink}`,background:P.parch,fontFamily:"inherit",fontSize:"1rem"}}/>
         </label>
         <div style={{marginBottom:"18px"}}>
