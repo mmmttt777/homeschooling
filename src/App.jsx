@@ -2203,8 +2203,16 @@ lessons:[
 ]},
 ];
 
-const sGet = async k => { try{const r=await window.storage.get(k);return r?.value?JSON.parse(r.value):null;}catch{return null;} };
-const sSet = async (k,v) => { try{await window.storage.set(k,JSON.stringify(v));}catch{} };
+// Storage: uses window.storage in Claude artifact env, falls back to localStorage elsewhere
+const _store = typeof window !== 'undefined' && window.storage ? {
+  get: async k => { try{ const r = await window.storage.get(k); return r?.value ? JSON.parse(r.value) : null; } catch{ return null; } },
+  set: async (k,v) => { try{ await window.storage.set(k, JSON.stringify(v)); } catch{} },
+} : {
+  get: async k => { try{ const r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch{ return null; } },
+  set: async (k,v) => { try{ localStorage.setItem(k, JSON.stringify(v)); } catch{} },
+};
+const sGet = k => _store.get(k);
+const sSet = (k,v) => _store.set(k,v);
 const todayKey = () => new Date().toISOString().slice(0,10);
 
 // ─── WEEKLY SCHEDULE BUILDER ────────────────────────────────────────────────
@@ -2330,7 +2338,7 @@ export default function App(){
   const weekPlans=getWeekPlans(child?.age);
   const curWeek=Math.min(Math.floor((Date.now()-new Date(new Date().getFullYear(),0,1))/(7*864e5)),35);
 
-  if(loading) return <div style={{background:P.cream,minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontFamily:"serif",fontSize:"1.5rem",color:P.ink}}>☩ Hearth & Home…</span></div>;
+  if(loading) return <div style={{background:P.cream,minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontFamily:"serif",fontSize:"1.5rem",color:P.ink}}>☩ Hearth &amp; Home…</span></div>;
 
   const NAV=[{v:"dashboard",l:"Dashboard",e:"🏡"},{v:"schedule",l:"Weekly Plan",e:"📅"},{v:"resources",l:"Resources",e:"📖"},{v:"lessons",l:"All Lessons",e:"📚"}];
 
@@ -2354,7 +2362,7 @@ export default function App(){
         <div style={{maxWidth:"960px",margin:"0 auto",padding:"8px 16px",display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
           <button onClick={()=>setSection("dashboard")} style={{display:"flex",alignItems:"center",gap:"8px",background:"none",border:"none",padding:0,flexShrink:0}}>
             <div style={{width:"34px",height:"34px",borderRadius:"50%",background:P.byz,border:`2px solid ${P.ink}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".95rem",color:P.cream}}>☩</div>
-            <span className="df" style={{fontSize:"1.15rem"}}>Hearth & Home</span>
+            <span className="df" style={{fontSize:"1.15rem"}}>Hearth &amp; Home</span>
           </button>
           <nav style={{display:"flex",gap:"4px",flex:1,flexWrap:"wrap"}}>
             {NAV.map(n=>(
@@ -2414,7 +2422,7 @@ export default function App(){
       {modal && <ProfileModal existing={editC} all={children} onClose={()=>{setModal(false);setEditC(null);}} onSave={(n,a,c)=>{if(editC){updChild(editC.id,{name:n,age:parseInt(a)||editC.age,color:c});setModal(false);setEditC(null);}else addChild(n,a,c);}} onDelete={id=>{delChild(id);setModal(false);setEditC(null);}} />}
 
       <footer style={{borderTop:`2px solid ${P.ink}`,background:P.parch,padding:"20px 16px",textAlign:"center"}}>
-        <div className="df" style={{fontSize:"1.1rem",marginBottom:"4px"}}>Hearth & Home</div>
+        <div className="df" style={{fontSize:"1.1rem",marginBottom:"4px"}}>Hearth &amp; Home</div>
         <div style={{opacity:.65,fontSize:".8rem"}}>Orthodox homeschool companion · 11 subjects · 36-week curriculum · ages 4–10</div>
         <div className="sf" style={{color:P.byz,fontSize:".95rem",marginTop:"4px"}}>"The glory of God is a human being fully alive." — St Irenaeus of Lyon</div>
       </footer>
