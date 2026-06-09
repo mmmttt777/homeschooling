@@ -2225,38 +2225,149 @@ const todayKey = () => new Date().toISOString().slice(0,10);
 const getSubjectList = (childAge) => (childAge && childAge <= 5) ? SUBJECTS_LITTLE : SUBJECTS;
 
 const PRACTICALS = ["cooking","gardening","farming","construction"];
+const DAY_TIME_SLOTS = {
+  Monday:["9:00-9:45","10:00-10:45"],
+  Tuesday:["9:00-9:45","10:00-10:45"],
+  Wednesday:["9:00-9:45","10:00-10:45"],
+  Thursday:["9:00-9:45","10:00-10:45"],
+  Friday:["9:30-10:30"],
+};
+const PERTH_OUTINGS = [
+  {title:"Swan River foreshore nature walk",place:"Matilda Bay Reserve, Crawley",note:"Sketch birds, river traffic and plant life; finish with a short picnic reflection.",q:"Matilda Bay Reserve Perth family walk"},
+  {title:"Kings Park botany and city geography",place:"Kings Park and Botanic Garden",note:"Find three WA native plants, map the Swan River, and talk about how the city grew around water.",q:"Kings Park Perth family botanic garden"},
+  {title:"WA Museum Boola Bardip inquiry day",place:"Perth Cultural Centre",note:"Choose one gallery object each and write a 'what I noticed / what I wonder' notebook entry.",q:"WA Museum Boola Bardip family visit"},
+  {title:"Fremantle maritime history trail",place:"Fremantle Fishing Boat Harbour and WA Maritime Museum",note:"Trace shipping, migrants, fishing and trade; compare old navigation with GPS.",q:"Fremantle Maritime Museum family"},
+  {title:"Cottesloe coast and erosion study",place:"Cottesloe Beach",note:"Observe waves, wind, dunes and erosion control; collect only photos and sketches.",q:"Cottesloe Beach dune erosion family"},
+  {title:"Herdsman Lake wetland birdwatch",place:"Herdsman Lake Regional Park",note:"Bring binoculars if possible and record waterbirds, insects and wetland sounds.",q:"Herdsman Lake Wildlife Centre family"},
+  {title:"Perth Hills orchard and seasons drive",place:"Bickley Valley or Carmel",note:"Notice slopes, soil, orchards and weather; connect food production to local geography.",q:"Bickley Valley Perth family orchard"},
+  {title:"Mundaring Weir engineering visit",place:"Mundaring Weir",note:"Study water storage, pipes and the Goldfields pipeline; sketch how water moves downhill and uphill.",q:"Mundaring Weir family visit"},
+  {title:"AQWA marine habitats comparison",place:"AQWA, Hillarys",note:"Compare coral reef, shipwreck coast and southern ocean habitats; list adaptations.",q:"AQWA Perth family marine habitats"},
+  {title:"Yanchep caves and wetlands",place:"Yanchep National Park",note:"Look for limestone, caves, wetlands and banksia woodland; discuss careful conservation.",q:"Yanchep National Park family caves wetlands"},
+  {title:"Perth Zoo animal classification",place:"South Perth",note:"Pick five animals and classify them by diet, habitat, body covering and adaptations.",q:"Perth Zoo family education"},
+  {title:"Scitech investigation session",place:"West Perth",note:"Let each child choose one exhibit, explain the science, and design a follow-up experiment at home.",q:"Scitech Perth family"},
+  {title:"Elizabeth Quay bridges and public art",place:"Perth CBD",note:"Walk the quay, read plaques, sketch bridge shapes and identify public transport links.",q:"Elizabeth Quay Perth family walk"},
+  {title:"Whiteman Park transport and bushland",place:"Whiteman",note:"Ride or observe heritage transport, then compare built history with bushland conservation.",q:"Whiteman Park family transport museum"},
+  {title:"Point Walter riverbank and sandbar",place:"Bicton",note:"Observe tides, sand movement and river recreation; make a simple map of the sandbar.",q:"Point Walter Reserve Perth family"},
+  {title:"Araluen garden seasons",place:"Roleystone",note:"Draw seasonal flowers, notice terracing, and talk about patient garden stewardship.",q:"Araluen Botanic Park family"},
+  {title:"Caversham wildlife and farm skills",place:"Swan Valley",note:"Compare native wildlife with farm animals; discuss animal care responsibilities.",q:"Caversham Wildlife Park family"},
+  {title:"Bells Rapids rocks and river flow",place:"Brigadoon",note:"Observe river speed, rocks and erosion from safe paths only; write a sensory poem.",q:"Bells Rapids Perth family walk"},
+];
+const FAMILY_LISTEN = [
+  {title:"Ancient Faith Kids or Saint of the Day",note:"Listen after dinner and ask: what virtue did we hear?",q:"Ancient Faith Kids saint of the day"},
+  {title:"Classical Kids Storytime",note:"Pair music with drawing quietly for 15 minutes.",q:"Classical Kids Storytime podcast"},
+  {title:"Brains On science episode",note:"Pause once so each child can predict the answer.",q:"Brains On science podcast kids"},
+  {title:"But Why: A Podcast for Curious Kids",note:"Let the youngest child choose the question.",q:"But Why podcast curious kids"},
+  {title:"Circle Round folktale",note:"Retell the story in three scenes at the table.",q:"Circle Round folktale podcast"},
+  {title:"ABC Kids Listen story",note:"Use it as a rest-time listen and narrate back afterwards.",q:"ABC Kids Listen story podcast"},
+  {title:"Australian history audio story",note:"Listen for one person, one place and one date.",q:"Australian history podcast for kids"},
+  {title:"Nature Track or bird call audio",note:"Try to identify one local bird sound on a walk.",q:"Western Australia bird calls audio"},
+  {title:"Orthodox chant for the week",note:"Play softly during copywork and notice repeated phrases.",q:"Orthodox chant for children"},
+  {title:"Storynory classic tale",note:"Ask what the main character wanted and what changed.",q:"Storynory classic stories"},
+  {title:"Tumble science podcast",note:"Write the experiment question before listening.",q:"Tumble science podcast kids"},
+  {title:"LibriVox family classic chapter",note:"Choose a public-domain classic and listen to one chapter.",q:"LibriVox family classic children"},
+];
+const FAMILY_WATCH = [
+  {title:"SciShow Kids",note:"Watch one short video connected to this week's science.",q:"SciShow Kids"},
+  {title:"ABC Education Australia",note:"Find a clip tied to Australian history, geography or nature.",q:"ABC Education Australia kids"},
+  {title:"National Geographic Kids",note:"Watch for habitat, adaptation and stewardship themes.",q:"National Geographic Kids animals"},
+  {title:"Orthodox saint story for children",note:"Search for the saint in this week's plan and compare details.",q:"Orthodox saint story for children"},
+  {title:"Numberblocks or Maths Antics",note:"Pick the concept closest to this week's maths lesson.",q:"Maths Antics kids lesson"},
+  {title:"Art for Kids Hub",note:"Draw something from the Perth outing or weekly lesson.",q:"Art for Kids Hub nature drawing"},
+  {title:"Cosmic Kids Yoga",note:"Use as a movement break after harder lessons.",q:"Cosmic Kids Yoga"},
+  {title:"Khan Academy Kids / Grammar",note:"Watch a short English or grammar reinforcement clip.",q:"Khan Academy grammar kids"},
+  {title:"BTN High or Behind the News",note:"Choose one current-events story and summarise it gently.",q:"Behind the News kids Australia"},
+  {title:"Gardening Australia Junior-friendly clip",note:"Look for compost, soil, seeds or seasonal growing ideas.",q:"Gardening Australia kids gardening"},
+  {title:"WA Parks and Wildlife clip",note:"Connect local habitats to the next outing.",q:"Western Australia Parks Wildlife family video"},
+  {title:"Beginner Greek alphabet or phrase video",note:"Practise saying three words aloud together.",q:"Greek alphabet kids video"},
+];
+const FAMILY_PROJECTS = [
+  "Make a one-page family field journal with a map, sketch, new words and a prayer of thanks.",
+  "Cook or prepare one simple food connected to the week's culture, science or saint story.",
+  "Create a dinner-table narration: each person shares one fact, one question and one beautiful thing.",
+  "Build a shoebox, Lego or cardboard model connected to one lesson this week.",
+  "Write a postcard to a grandparent or friend describing what you learned.",
+  "Make a family timeline card and add it to a wall or notebook timeline.",
+  "Do a service task together: tidy a shared space, bring food to someone, or write an encouragement note.",
+  "Record a two-minute family audio summary of the week and save it as a learning memory.",
+  "Create a nature table with labelled finds, drawings or printed photos from the week.",
+  "Have a Friday review tea: read favourite notebook pages aloud and choose next week's question.",
+  "Design a simple experiment or measurement chart and check it three times this week.",
+  "Memorise a short prayer, poem, verse or Greek phrase and recite it together.",
+];
+const searchUrl = q => `https://www.google.com/search?q=${encodeURIComponent(q)}`;
+const youtubeUrl = q => `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
+const pickWeekly = (arr, idx) => arr[idx % arr.length];
+const buildEnrichment = idx => ({
+  outing:pickWeekly(PERTH_OUTINGS,idx),
+  listen:pickWeekly(FAMILY_LISTEN,idx),
+  watch:pickWeekly(FAMILY_WATCH,idx),
+  project:pickWeekly(FAMILY_PROJECTS,idx),
+});
+const activityText = (pairs, fallback) => pairs.find(({l})=>l?.act)?.l.act || fallback;
+const buildDay = (day, emoji, pairs, activityTitle, activityNote) => ({
+  day, emoji, pairs,
+  slots:[
+    ...pairs.filter(({s,l})=>s&&l).map(({s,l},i)=>({
+      time:DAY_TIME_SLOTS[day]?.[i] || "9:00-9:45",
+      kind:"lesson",
+      s,
+      l,
+    })),
+    {
+      time:"11:15-11:45",
+      kind:"activity",
+      title:activityTitle,
+      note:activityNote,
+    },
+  ],
+});
+const buildFamilyDay = enrichment => ({
+  day:"Weekend",
+  emoji:"🌏",
+  pairs:[],
+  slots:[
+    {time:"Sat AM",kind:"activity",title:`Outing: ${enrichment.outing.title}`,note:`${enrichment.outing.place}. ${enrichment.outing.note}`},
+    {time:"Sat PM",kind:"activity",title:`Listen: ${enrichment.listen.title}`,note:enrichment.listen.note},
+    {time:"Sun PM",kind:"activity",title:`Watch/project: ${enrichment.watch.title}`,note:`${enrichment.watch.note} Project: ${enrichment.project}`},
+  ],
+});
 function buildWeek(idx, childAge=6){
   const SL = getSubjectList(childAge);
   const saint = SAINTS[idx%12];
+  const enrichment=buildEnrichment(idx);
   const getL = sid => { const s=SL.find(s=>s.id===sid); return s?s.lessons[idx%s.lessons.length]:null; };
   const pId = PRACTICALS[idx%4];
   const pS = SL.find(s=>s.id===pId);
   const pL = pS?.lessons[Math.floor(idx/4)%pS.lessons.length];
+  const mondayPairs = [
+    {s:SL.find(s=>s.id==="english"),  l:getL("english")},
+    {s:SL.find(s=>s.id==="maths"),    l:getL("maths")},
+  ];
+  const tuesdayPairs = [
+    {s:SL.find(s=>s.id==="orthodox"), l:getL("orthodox")},
+    {s:{id:"saint",name:"Saint of the Week",emoji:"🕯️",color:P.byz},
+     l:{id:"snt"+idx,title:"Life of "+saint.n,dur:"30 min",age:"All",
+        content:saint.life, act:saint.lesson,
+        vsearch:saint.vid, res:saint.res, ff:"☩ Prayer: "+saint.prayer}},
+  ];
+  const wednesdayPairs = [
+    {s:SL.find(s=>s.id==="nature"),   l:getL("nature")},
+    {s:SL.find(s=>s.id==="greek"),    l:getL("greek")},
+  ];
+  const thursdayPairs = [
+    {s:SL.find(s=>s.id==="maori"),    l:getL("maori")},
+    {s:SL.find(s=>s.id==="sports"),   l:getL("sports")},
+  ];
+  const fridayPairs = [{s:pS, l:pL}];
   return {
-    week:idx+1, saint,
+    week:idx+1, saint, enrichment,
     days:[
-      {day:"Monday",   emoji:"📚",pairs:[
-        {s:SL.find(s=>s.id==="english"),  l:getL("english")},
-        {s:SL.find(s=>s.id==="maths"),    l:getL("maths")},
-      ]},
-      {day:"Tuesday",  emoji:"☩",  pairs:[
-        {s:SL.find(s=>s.id==="orthodox"), l:getL("orthodox")},
-        {s:{id:"saint",name:"Saint of the Week",emoji:"🕯️",color:P.byz},
-         l:{id:"snt"+idx,title:"Life of "+saint.n,dur:"30 min",age:"All",
-            content:saint.life, act:saint.lesson,
-            vsearch:saint.vid, res:saint.res, ff:"☩ Prayer: "+saint.prayer}},
-      ]},
-      {day:"Wednesday",emoji:"🌿", pairs:[
-        {s:SL.find(s=>s.id==="nature"),   l:getL("nature")},
-        {s:SL.find(s=>s.id==="greek"),    l:getL("greek")},
-      ]},
-      {day:"Thursday", emoji:"🥝", pairs:[
-        {s:SL.find(s=>s.id==="maori"),    l:getL("maori")},
-        {s:SL.find(s=>s.id==="sports"),   l:getL("sports")},
-      ]},
-      {day:"Friday",   emoji:"🛠️", pairs:[
-        {s:pS, l:pL},
-      ]},
+      buildDay("Monday","📚",mondayPairs,"Copywork, narration and maths game",activityText(mondayPairs,"Read aloud for 10 minutes, narrate back, then play a quick facts game.")),
+      buildDay("Tuesday","☩",tuesdayPairs,"Prayer, saint map and virtue practice",activityText(tuesdayPairs,"Mark the saint's homeland on a map and choose one virtue to practise today.")),
+      buildDay("Wednesday","🌿",wednesdayPairs,"Nature notebook and Greek aloud",activityText(wednesdayPairs,"Draw one nature observation, label it, then practise three Greek words aloud.")),
+      buildDay("Thursday","🥝",thursdayPairs,"Culture, movement and health challenge",activityText(thursdayPairs,"Practise the movement skill, then add one te reo or local-history word to your notebook.")),
+      buildDay("Friday","🛠️",fridayPairs,"Maker workshop and weekly review",activityText(fridayPairs,"Make, cook, build or grow something; finish by reviewing the week's best notebook page.")),
+      buildFamilyDay(enrichment),
     ]
   };
 }
@@ -2303,13 +2414,32 @@ export default function App(){
 
   const child = useMemo(()=>children.find(c=>c.id===childId),[children,childId]);
   const addChild = (name,age,color)=>{
-    const c={id:`c${Date.now()}`,name,age:parseInt(age)||6,color,progress:{},streak:0,lastDate:null,lastLesson:null};
+    const c={id:`c${Date.now()}`,name,age:parseInt(age)||6,color,progress:{},extras:{},streak:0,lastDate:null,lastLesson:null};
     setChildren(p=>[...p,c]);setChildId(c.id);setModal(false);setEditC(null);
   };
   const updChild = (id,u)=>setChildren(p=>p.map(c=>c.id===id?{...c,...u}:c));
   const delChild = (id)=>{
     const next=children.filter(c=>c.id!==id);setChildren(next);
     if(childId===id){setChildId(next[0]?.id||null);if(!next.length)setModal(true);}
+  };
+  const addExtra = (week, item)=>{
+    if(!child||!item.title.trim()) return;
+    const extras={...(child.extras||{})};
+    const entry={id:`x${Date.now()}`,title:item.title.trim(),when:item.when.trim(),done:false};
+    extras[week]=[...(extras[week]||[]),entry];
+    updChild(child.id,{extras});
+  };
+  const toggleExtra = (week, id)=>{
+    if(!child) return;
+    const extras={...(child.extras||{})};
+    extras[week]=(extras[week]||[]).map(x=>x.id===id?{...x,done:!x.done}:x);
+    updChild(child.id,{extras});
+  };
+  const deleteExtra = (week, id)=>{
+    if(!child) return;
+    const extras={...(child.extras||{})};
+    extras[week]=(extras[week]||[]).filter(x=>x.id!==id);
+    updChild(child.id,{extras});
   };
   const toggleDone = lid => {
     if(!child) return;
@@ -2393,7 +2523,7 @@ export default function App(){
       </header>
 
       <main style={{maxWidth:"960px",margin:"0 auto",padding:"16px 16px 60px"}}>
-        {section==="dashboard" && child && <Dashboard child={child} curWeek={curWeek} weekPlans={weekPlans} onLesson={openLesson} onSubject={openSubject} onToggle={toggleDone} onEdit={()=>{setEditC(child);setModal(true);}} />}
+        {section==="dashboard" && child && <Dashboard child={child} curWeek={curWeek} weekPlans={weekPlans} onLesson={openLesson} onSubject={openSubject} onToggle={toggleDone} onEdit={()=>{setEditC(child);setModal(true);}} onAddExtra={addExtra} onToggleExtra={toggleExtra} onDeleteExtra={deleteExtra} />}
         {section==="schedule" && child && <ScheduleView child={child} curWeek={curWeek} weekPlans={weekPlans} onLesson={openLesson} onToggle={toggleDone} />}
         {section==="resources" && <ResourcesView />}
         {section==="lessons" && <AllLessonsView child={child} subjects={getSubjectList(child?.age)} onSubject={openSubject} />}
@@ -2465,35 +2595,153 @@ function ChildPicker({child,children,onSwitch,onAdd}){
   );
 }
 
+function WeeklyScheduleCard({plan,child,onLesson,onToggle,compact=false}){
+  return (
+    <div className="bi cs" style={{borderRadius:"18px",padding:compact?"12px":"16px",background:P.parch}}>
+      <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",gap:"10px",marginBottom:"10px",flexWrap:"wrap"}}>
+        <h2 className="df" style={{fontSize:compact?"1.2rem":"1.35rem",margin:0}}>Week {plan.week} lesson schedule</h2>
+        <span className="sf" style={{color:P.byz,fontSize:".95rem"}}>🕯️ {plan.saint.n}</span>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:"10px"}}>
+        {plan.days.map(day=>(
+          <div key={day.day} style={{borderRadius:"12px",border:`2px solid ${P.ink}`,background:P.cream,overflow:"hidden"}}>
+            <div style={{background:P.ink,color:P.cream,padding:"7px 10px",display:"flex",alignItems:"center",gap:"6px"}}>
+              <span>{day.emoji}</span><span className="df" style={{fontSize:".95rem"}}>{day.day}</span>
+            </div>
+            <div style={{padding:"9px",display:"flex",flexDirection:"column",gap:"7px"}}>
+              {day.slots.map((slot,i)=>{
+                const isLesson=slot.kind==="lesson";
+                const isSaint=slot.s?.id==="saint";
+                const done=isLesson&&!isSaint&&child?.progress?.[slot.l.id]?.done;
+                const accent=isLesson ? slot.s.color : P.gold;
+                return (
+                  <div key={`${slot.time}-${i}`} style={{borderRadius:"9px",border:`1.5px solid ${P.ink}`,background:done?"rgba(45,90,39,.1)":P.parch,padding:"8px"}}>
+                    <div style={{display:"flex",gap:"7px",alignItems:"flex-start"}}>
+                      <div style={{fontSize:".68rem",fontWeight:800,color:P.cream,background:accent,borderRadius:"7px",padding:"3px 5px",border:`1.5px solid ${P.ink}`,whiteSpace:"nowrap"}}>{slot.time}</div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",opacity:.55}}>{isLesson?(isSaint?"Saint of the Week":slot.s.name):"Hands-on activity"}</div>
+                        <div style={{fontWeight:700,fontSize:".84rem",lineHeight:1.25}}>{isLesson?slot.l.title:slot.title}</div>
+                        <div style={{fontSize:".74rem",opacity:.75,lineHeight:1.45,marginTop:"3px"}}>
+                          {isLesson
+                            ? (compact&&slot.l.content?.length>95?slot.l.content.slice(0,95)+"…":slot.l.content)
+                            : (compact&&slot.note?.length>110?slot.note.slice(0,110)+"…":slot.note)}
+                        </div>
+                        {isLesson&&(
+                          <button onClick={()=>isSaint?onLesson("saint",slot.l.id,slot.l):onLesson(slot.s.id,slot.l.id)}
+                            style={{marginTop:"6px",background:accent,color:P.cream,border:"none",borderRadius:"7px",padding:"4px 8px",fontSize:".72rem",fontWeight:700}}>
+                            Open lesson →
+                          </button>
+                        )}
+                      </div>
+                      {isLesson&&!isSaint&&(
+                        <button onClick={()=>onToggle(slot.l.id)} style={{background:"none",border:"none",color:done?P.forest:P.ink,opacity:done?1:.25,flexShrink:0}}>
+                          {done?<CheckCircle2 size={19}/>:<Circle size={19}/>}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FamilyEnrichmentCard({enrichment}){
+  const cards=[
+    {k:"outing",e:"🧭",t:"Perth outing",c:P.forest,item:enrichment.outing,link:searchUrl(enrichment.outing.q),label:"Plan outing"},
+    {k:"listen",e:"🎧",t:"Family listen",c:P.byz,item:enrichment.listen,link:searchUrl(enrichment.listen.q),label:"Find audio"},
+    {k:"watch",e:"🎬",t:"Watch together",c:P.rose,item:enrichment.watch,link:youtubeUrl(enrichment.watch.q),label:"Search videos"},
+  ];
+  return (
+    <section>
+      <h2 className="df" style={{fontSize:"1.3rem",margin:"0 0 10px"}}>🌏 Family enrichment this week</h2>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:"9px"}}>
+        {cards.map(({k,e,t,c,item,link,label})=>(
+          <div key={k} className="bi cs" style={{borderRadius:"14px",padding:"12px",background:P.cream,borderLeft:`5px solid ${c}`}}>
+            <div style={{fontSize:".72rem",fontWeight:800,textTransform:"uppercase",opacity:.55,marginBottom:"4px"}}>{e} {t}</div>
+            <div className="df" style={{fontSize:".95rem",lineHeight:1.2}}>{item.title}</div>
+            {item.place&&<div style={{fontSize:".73rem",color:c,fontWeight:800,marginTop:"3px"}}>{item.place}</div>}
+            <p style={{fontSize:".78rem",lineHeight:1.55,opacity:.82,margin:"6px 0"}}>{item.note}</p>
+            <a href={link} target="_blank" rel="noopener noreferrer"
+              style={{display:"inline-flex",alignItems:"center",gap:"4px",fontSize:".74rem",fontWeight:800,color:c,textDecoration:"none"}}>
+              <ExternalLink size={11}/> {label}
+            </a>
+          </div>
+        ))}
+      </div>
+      <div className="bi" style={{borderRadius:"12px",padding:"10px 12px",background:P.parch,marginTop:"9px"}}>
+        <div style={{fontWeight:800,fontSize:".8rem",color:P.byz,marginBottom:"3px"}}>Family project</div>
+        <div style={{fontSize:".84rem",lineHeight:1.55}}>{enrichment.project}</div>
+      </div>
+    </section>
+  );
+}
+
+function ExtraActivitiesPanel({child,weekKey,onAdd,onToggle,onDelete}){
+  const [title,setTitle]=useState("");
+  const [when,setWhen]=useState("");
+  const extras=child.extras?.[weekKey]||[];
+  const add=()=>{
+    if(!title.trim()) return;
+    onAdd(weekKey,{title,when});
+    setTitle("");
+    setWhen("");
+  };
+  return (
+    <section className="bi cs" style={{borderRadius:"16px",padding:"14px",background:P.cream}}>
+      <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",gap:"8px",flexWrap:"wrap",marginBottom:"8px"}}>
+        <h2 className="df" style={{fontSize:"1.25rem",margin:0}}>🎒 Extra-curricular this week</h2>
+        <span style={{fontSize:".72rem",fontWeight:800,opacity:.55}}>{extras.filter(x=>x.done).length}/{extras.length} done</span>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"minmax(0,2fr) minmax(110px,1fr) auto",gap:"6px",alignItems:"center",marginBottom:"10px"}}>
+        <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. swimming, piano practice, library books"
+          style={{minWidth:0,padding:"8px 10px",borderRadius:"9px",border:`2px solid ${P.ink}`,background:P.parch,fontFamily:"inherit",fontSize:".85rem"}}/>
+        <input value={when} onChange={e=>setWhen(e.target.value)} placeholder="When?"
+          style={{minWidth:0,padding:"8px 10px",borderRadius:"9px",border:`2px solid ${P.ink}`,background:P.parch,fontFamily:"inherit",fontSize:".85rem"}}/>
+        <button onClick={add} disabled={!title.trim()} className="bi css lf"
+          style={{background:P.gold,border:"none",borderRadius:"9px",padding:"8px 10px",fontWeight:800,opacity:title.trim()?1:.45,cursor:title.trim()?"pointer":"not-allowed"}}>
+          <Plus size={14}/>
+        </button>
+      </div>
+      {extras.length===0 ? (
+        <div style={{fontSize:".82rem",opacity:.7,lineHeight:1.55,background:P.parch,borderRadius:"10px",padding:"10px"}}>
+          Add sport, music, appointments, library holds, chores or co-op commitments here so the dashboard stays your single weekly reference.
+        </div>
+      ) : (
+        <div style={{display:"flex",flexDirection:"column",gap:"6px"}}>
+          {extras.map(item=>(
+            <div key={item.id} style={{display:"flex",alignItems:"center",gap:"8px",border:`1.5px solid ${P.ink}`,borderRadius:"10px",padding:"8px",background:item.done?"rgba(45,90,39,.1)":P.parch}}>
+              <button onClick={()=>onToggle(weekKey,item.id)} style={{background:"none",border:"none",color:item.done?P.forest:P.ink,opacity:item.done?1:.35}}>
+                {item.done?<CheckCircle2 size={19}/>:<Circle size={19}/>}
+              </button>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:800,fontSize:".85rem",textDecoration:item.done?"line-through":"none"}}>{item.title}</div>
+                {item.when&&<div style={{fontSize:".72rem",opacity:.6}}>⏱ {item.when}</div>}
+              </div>
+              <button onClick={()=>onDelete(weekKey,item.id)} style={{background:"none",border:"none",color:P.rose}}>
+                <Trash2 size={15}/>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 // ─── DASHBOARD ─────────────────────────────────────────────────────────────
-function Dashboard({child,curWeek,weekPlans,onLesson,onSubject,onToggle,onEdit}){
+function Dashboard({child,curWeek,weekPlans,onLesson,onSubject,onToggle,onEdit,onAddExtra,onToggleExtra,onDeleteExtra}){
   const SL = getSubjectList(child.age);
   const totalL = SL.reduce((s,sub)=>s+sub.lessons.length,0);
   const doneCount = Object.values(child.progress||{}).filter(p=>p.done).length;
   const pct = Math.round((doneCount/totalL)*100);
   const plan = weekPlans[curWeek];
   const monthSaint = SAINTS[new Date().getMonth()];
-
-  // Next uncompleted lesson per today's day
-  const todayLessons = useMemo(()=>{
-    const dow = new Date().getDay();
-    const sidMap = {1:["english","maths"],2:["orthodox"],3:["nature","greek"],4:["maori","sports"],5:[PRACTICALS[curWeek%4]]};
-    const sids = sidMap[dow]||["english","maths"];
-    const out=[];
-    sids.forEach(sid=>{
-      const s=SL.find(sub=>sub.id===sid);
-      if(!s) return;
-      const l=s.lessons.find(l=>!child.progress?.[l.id]?.done);
-      if(l) out.push({s,l});
-    });
-    // fill up to 3 from any subject
-    if(out.length<2) SL.forEach(s=>{
-      if(out.length>=3) return;
-      const l=s.lessons.find(l=>!child.progress?.[l.id]?.done);
-      if(l&&!out.find(x=>x.s.id===s.id)) out.push({s,l});
-    });
-    return out.slice(0,3);
-  },[child,curWeek]);
+  const weekKey=`week-${plan.week}`;
 
   const greeting=(()=>{const h=new Date().getHours();return h<12?"Good morning":h<18?"Kia ora":"Good evening";})();
 
@@ -2506,8 +2754,8 @@ function Dashboard({child,curWeek,weekPlans,onLesson,onSubject,onToggle,onEdit})
           <div>
             <div className="sf" style={{fontSize:"1.2rem",opacity:.9}}>{greeting},</div>
             <h1 className="df" style={{fontSize:"2rem",lineHeight:1,margin:"2px 0 8px"}}>{child.name}!</h1>
-            <p style={{margin:0,opacity:.95,maxWidth:"340px",fontSize:".88rem"}}>
-              {child.streak>1?`🔥 ${child.streak}-day learning streak — keep it going!`:"Begin with prayer — then let's learn together."}
+            <p style={{margin:0,opacity:.95,maxWidth:"440px",fontSize:".88rem"}}>
+              {child.streak>1?`🔥 ${child.streak}-day learning streak — keep it going!`:`Week ${plan.week} is ready: lessons, Perth outing, family media and extra activities in one place.`}
             </p>
           </div>
           <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"flex-start"}}>
@@ -2532,6 +2780,10 @@ function Dashboard({child,curWeek,weekPlans,onLesson,onSubject,onToggle,onEdit})
         </div>
       </div>
 
+      <WeeklyScheduleCard plan={plan} child={child} onLesson={onLesson} onToggle={onToggle} compact />
+      <FamilyEnrichmentCard enrichment={plan.enrichment} />
+      <ExtraActivitiesPanel child={child} weekKey={weekKey} onAdd={onAddExtra} onToggle={onToggleExtra} onDelete={onDeleteExtra} />
+
       {/* Saint of the Month */}
       <div className="bi cs" style={{borderRadius:"16px",padding:"14px 16px",background:P.parch,display:"flex",gap:"12px",alignItems:"flex-start",flexWrap:"wrap"}}>
         <div style={{width:"44px",height:"44px",borderRadius:"10px",background:P.byz,color:P.cream,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.2rem",border:`2px solid ${P.ink}`,flexShrink:0}}>🕯️</div>
@@ -2545,80 +2797,6 @@ function Dashboard({child,curWeek,weekPlans,onLesson,onSubject,onToggle,onEdit})
           </a>
         </div>
       </div>
-
-      {/* Today's schedule */}
-      <section>
-        <h2 className="df" style={{fontSize:"1.3rem",marginBottom:"10px"}}>📋 Today's Lessons
-          <span className="sf" style={{color:P.rose,fontSize:".95rem",fontWeight:400,marginLeft:"8px"}}>your next steps</span>
-        </h2>
-        <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-          {todayLessons.length===0
-            ? <div className="bi" style={{borderRadius:"12px",padding:"14px",textAlign:"center",background:P.parch}}>🎉 All of today's lessons are done — wonderful work!</div>
-            : todayLessons.map(({s,l})=>{
-              const done=child.progress?.[l.id]?.done;
-              return (
-                <div key={l.id} className="bi cs lf" style={{borderRadius:"12px",padding:"10px 12px",background:done?P.parch:P.cream,display:"flex",alignItems:"flex-start",gap:"10px"}}>
-                  <div style={{width:"38px",height:"38px",borderRadius:"10px",background:s.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",border:`2px solid ${P.ink}`,flexShrink:0}}>{s.emoji}</div>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",opacity:.55}}>{s.name}</div>
-                    <div className="df" style={{fontSize:".95rem",margin:"2px 0"}}>{l.title}</div>
-                    <div style={{fontSize:".72rem",opacity:.6}}>⏱ {l.dur} · Ages {l.age}</div>
-                    {/* Watch link */}
-                    {l.vsearch&&<a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(l.vsearch)}`} target="_blank" rel="noopener noreferrer"
-                      style={{display:"inline-flex",alignItems:"center",gap:"3px",fontSize:".72rem",fontWeight:700,color:P.rose,marginTop:"4px"}}>
-                      <Play size={10}/> Watch on YouTube
-                    </a>}
-                    {/* Activity */}
-                    {l.act&&<div style={{marginTop:"6px",padding:"6px 8px",borderRadius:"6px",background:"rgba(0,0,0,.04)",fontSize:".78rem"}}>
-                      <span style={{fontWeight:700}}>✋ Do this: </span>{l.act.length>120?l.act.slice(0,120)+"…":l.act}
-                    </div>}
-                  </div>
-                  <div style={{display:"flex",flexDirection:"column",gap:"4px",alignItems:"flex-end",flexShrink:0}}>
-                    <button onClick={()=>onLesson(s.id,l.id)} className="bi css lf"
-                      style={{background:s.color,color:P.cream,borderRadius:"8px",padding:"5px 10px",fontWeight:700,fontSize:".76rem",border:"none"}}>
-                      Open →
-                    </button>
-                    <button onClick={()=>onToggle(l.id)} style={{background:"none",border:"none",color:done?P.forest:P.ink,opacity:done?1:.25}}>
-                      {done?<CheckCircle2 size={20}/>:<Circle size={20}/>}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-        </div>
-      </section>
-
-      {/* This week's plan compact */}
-      <section>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"10px",flexWrap:"wrap",gap:"8px"}}>
-          <h2 className="df" style={{fontSize:"1.3rem",margin:0}}>📅 Week {plan.week} Overview</h2>
-          <span className="sf" style={{color:P.byz,fontSize:".9rem"}}>🕯️ {plan.saint.n}</span>
-        </div>
-        <div style={{display:"flex",flexDirection:"column",gap:"5px"}}>
-          {plan.days.map(day=>(
-            <div key={day.day} className="bi" style={{borderRadius:"10px",padding:"8px 12px",background:P.cream,display:"flex",alignItems:"flex-start",gap:"10px",flexWrap:"wrap"}}>
-              <div style={{fontWeight:700,fontSize:".82rem",minWidth:"80px",display:"flex",alignItems:"center",gap:"5px"}}>{day.emoji} {day.day}</div>
-              <div style={{display:"flex",gap:"5px",flex:1,flexWrap:"wrap"}}>
-                {day.pairs.map(({s,l},i)=>{
-                  if(!s||!l) return null;
-                  const isDone=child.progress?.[l.id]?.done;
-                  return (
-                    <button key={i} onClick={()=>{
-                        if(s.id==="saint") onLesson("saint",l.id,l);
-                        else if(s.id) onLesson(s.id,l.id);
-                      }}
-                      style={{display:"flex",alignItems:"center",gap:"4px",padding:"3px 7px",borderRadius:"6px",background:isDone?"rgba(45,90,39,.12)":P.parch,border:`1.5px solid ${P.ink}`,fontSize:".74rem",cursor:"pointer",fontWeight:600}}>
-                      <span>{s.emoji}</span>
-                      <span style={{maxWidth:"110px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{l.title}</span>
-                      {isDone&&<CheckCircle2 size={11} style={{color:P.forest,flexShrink:0}}/>}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Progress by subject */}
       <section>
@@ -2672,93 +2850,9 @@ function ScheduleView({child,curWeek,weekPlans,onLesson,onToggle}){
         </div>
       </div>
 
-      {/* Week detail */}
-      <div className="bi cs" style={{borderRadius:"16px",padding:"16px",background:P.parch}}>
-        <div style={{display:"flex",alignItems:"baseline",gap:"10px",marginBottom:"6px",flexWrap:"wrap"}}>
-          <h2 className="df" style={{fontSize:"1.3rem",margin:0}}>Week {plan.week}</h2>
-          {selWk===curWeek&&<span style={{background:P.byz,color:P.cream,borderRadius:"999px",padding:"2px 8px",fontSize:".72rem",fontWeight:700}}>← This week</span>}
-        </div>
-
-        {/* Saint of the week */}
-        <div className="bi" style={{borderRadius:"12px",padding:"12px",background:P.cream,marginBottom:"12px"}}>
-          <div style={{fontWeight:700,color:P.byz,marginBottom:"4px",display:"flex",alignItems:"center",gap:"6px",fontSize:".85rem"}}>
-            🕯️ Saint of the Week: {plan.saint.n} — Feast: {plan.saint.f}
-          </div>
-          <p style={{margin:"0 0 6px",fontSize:".82rem",opacity:.85,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:3,WebkitBoxOrient:"vertical"}}>{plan.saint.life}</p>
-          <div style={{fontStyle:"italic",color:P.byz,fontSize:".78rem",marginBottom:"6px"}}>{plan.saint.prayer}</div>
-          <a href={plan.saint.res} target="_blank" rel="noopener noreferrer"
-            style={{display:"inline-flex",alignItems:"center",gap:"4px",fontSize:".75rem",fontWeight:700,color:P.byz}}>
-            <ExternalLink size={11}/> Read full life at OCA.org
-          </a>
-        </div>
-
-        {/* Days */}
-        <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
-          {plan.days.map(day=>(
-            <div key={day.day} style={{borderRadius:"10px",border:`2px solid ${P.ink}`,background:P.cream,overflow:"hidden"}}>
-              <div style={{background:P.ink,color:P.cream,padding:"5px 10px",display:"flex",alignItems:"center",gap:"6px"}}>
-                <span>{day.emoji}</span><span className="df" style={{fontSize:".9rem"}}>{day.day}</span>
-              </div>
-              <div style={{padding:"10px",display:"flex",flexDirection:"column",gap:"8px"}}>
-                {day.pairs.map(({s,l},i)=>{
-                  if(!s||!l) return null;
-                  const isDone=child?.progress?.[l.id]?.done;
-                  const isSaint=s.id==="saint";
-                  return (
-                    <div key={i} style={{borderRadius:"8px",border:`1.5px solid ${P.ink}`,background:isDone?"rgba(45,90,39,.1)":P.parch,padding:"9px 10px"}}>
-                      <div style={{display:"flex",alignItems:"flex-start",gap:"8px",flexWrap:"wrap"}}>
-                        <span style={{fontSize:"1rem"}}>{s.emoji}</span>
-                        <div style={{flex:1,minWidth:0}}>
-                          <div style={{fontSize:".65rem",fontWeight:700,textTransform:"uppercase",opacity:.55}}>{isSaint?"Saint of the Week":s.name}</div>
-                          <div style={{fontWeight:700,fontSize:".88rem",margin:"2px 0"}}>{l.title}</div>
-                          <p style={{margin:"0 0 6px",fontSize:".8rem",opacity:.8,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{l.content}</p>
-                          {/* Activity */}
-                          {l.act&&<div style={{marginBottom:"6px",padding:"6px 8px",borderRadius:"6px",background:"rgba(0,0,0,.04)",fontSize:".78rem"}}>
-                            <span style={{fontWeight:700}}>✋ Do this: </span>{l.act}
-                          </div>}
-                          {/* Fun fact */}
-                          {l.ff&&<div style={{marginBottom:"6px",fontSize:".76rem",fontStyle:"italic",color:P.byz}}>💡 {l.ff}</div>}
-                          <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center"}}>
-                            {l.vsearch&&(
-                              <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(l.vsearch)}`} target="_blank" rel="noopener noreferrer"
-                                style={{display:"inline-flex",alignItems:"center",gap:"3px",background:P.rose,color:P.cream,borderRadius:"7px",padding:"3px 8px",fontSize:".72rem",fontWeight:700,textDecoration:"none"}}>
-                                <Play size={10}/> Watch
-                              </a>
-                            )}
-                            {l.res&&(
-                              <a href={l.res} target="_blank" rel="noopener noreferrer"
-                                style={{display:"inline-flex",alignItems:"center",gap:"3px",background:P.sky,color:P.cream,borderRadius:"7px",padding:"3px 8px",fontSize:".72rem",fontWeight:700,textDecoration:"none"}}>
-                                <BookMarked size={10}/> Resource
-                              </a>
-                            )}
-                            {!isSaint&&s.id&&(
-                              <button onClick={()=>onLesson(s.id,l.id)}
-                                style={{background:s.color,color:P.cream,borderRadius:"7px",padding:"3px 8px",fontSize:".72rem",fontWeight:700,border:"none"}}>
-                                Full lesson →
-                              </button>
-                            )}
-                            {isSaint&&(
-                              <button onClick={()=>onLesson("saint",l.id,l)}
-                                style={{background:P.byz,color:P.cream,borderRadius:"7px",padding:"3px 8px",fontSize:".72rem",fontWeight:700,border:"none"}}>
-                                Full saint story →
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                        {!isSaint&&child&&(
-                          <button onClick={()=>onToggle(l.id)} style={{background:"none",border:"none",color:isDone?P.forest:P.ink,opacity:isDone?1:.25,flexShrink:0}}>
-                            {isDone?<CheckCircle2 size={20}/>:<Circle size={20}/>}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <WeeklyScheduleCard plan={plan} child={child} onLesson={onLesson} onToggle={onToggle} />
+      {selWk===curWeek&&<span style={{alignSelf:"flex-start",background:P.byz,color:P.cream,borderRadius:"999px",padding:"2px 8px",fontSize:".72rem",fontWeight:700}}>← This week</span>}
+      <FamilyEnrichmentCard enrichment={plan.enrichment} />
     </div>
   );
 }
