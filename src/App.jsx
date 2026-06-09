@@ -2331,6 +2331,10 @@ const buildFamilyDay = enrichment => ({
     {time:"Sun PM",kind:"activity",title:`Watch/project: ${enrichment.watch.title}`,note:`${enrichment.watch.note} Project: ${enrichment.project}`},
   ],
 });
+const currentPlanDay = () => {
+  const days=["Weekend","Monday","Tuesday","Wednesday","Thursday","Friday","Weekend"];
+  return days[new Date().getDay()];
+};
 function buildWeek(idx, childAge=6){
   const SL = getSubjectList(childAge);
   const saint = SAINTS[idx%12];
@@ -2595,7 +2599,7 @@ function ChildPicker({child,children,onSwitch,onAdd}){
   );
 }
 
-function WeeklyScheduleCard({plan,child,onLesson,onToggle,compact=false}){
+function WeeklyScheduleCard({plan,child,onLesson,onToggle,compact=false,selectedDay,onDaySelect}){
   return (
     <div className="bi cs" style={{borderRadius:"18px",padding:compact?"12px":"16px",background:P.parch}}>
       <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",gap:"10px",marginBottom:"10px",flexWrap:"wrap"}}>
@@ -2604,10 +2608,12 @@ function WeeklyScheduleCard({plan,child,onLesson,onToggle,compact=false}){
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:"10px"}}>
         {plan.days.map(day=>(
-          <div key={day.day} style={{borderRadius:"12px",border:`2px solid ${P.ink}`,background:P.cream,overflow:"hidden"}}>
-            <div style={{background:P.ink,color:P.cream,padding:"7px 10px",display:"flex",alignItems:"center",gap:"6px"}}>
-              <span>{day.emoji}</span><span className="df" style={{fontSize:".95rem"}}>{day.day}</span>
-            </div>
+          <div key={day.day} style={{borderRadius:"12px",border:`2px solid ${selectedDay===day.day?P.byz:P.ink}`,background:P.cream,overflow:"hidden",boxShadow:selectedDay===day.day?`0 0 0 3px ${P.gold}`:"none"}}>
+            <button onClick={()=>onDaySelect?.(day.day)}
+              style={{width:"100%",background:selectedDay===day.day?P.byz:P.ink,color:P.cream,padding:"7px 10px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:"6px",border:"none",textAlign:"left"}}>
+              <span style={{display:"flex",alignItems:"center",gap:"6px"}}><span>{day.emoji}</span><span className="df" style={{fontSize:".95rem"}}>{day.day}</span></span>
+              {onDaySelect&&<span style={{fontSize:".68rem",fontWeight:800,opacity:.85}}>Open day</span>}
+            </button>
             <div style={{padding:"9px",display:"flex",flexDirection:"column",gap:"7px"}}>
               {day.slots.map((slot,i)=>{
                 const isLesson=slot.kind==="lesson";
@@ -2647,6 +2653,83 @@ function WeeklyScheduleCard({plan,child,onLesson,onToggle,compact=false}){
         ))}
       </div>
     </div>
+  );
+}
+
+function DayScheduleCard({plan,dayName,child,onLesson,onToggle,onDaySelect}){
+  const day = plan.days.find(d=>d.day===dayName) || plan.days[0];
+  const lessonCount=day.slots.filter(s=>s.kind==="lesson").length;
+  const activityCount=day.slots.length-lessonCount;
+  return (
+    <section className="bi cs" style={{borderRadius:"18px",padding:"16px",background:P.cream}}>
+      <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"10px",flexWrap:"wrap",marginBottom:"12px"}}>
+        <div>
+          <div style={{fontSize:".72rem",fontWeight:800,textTransform:"uppercase",letterSpacing:".05em",opacity:.55}}>Open day view</div>
+          <h2 className="df" style={{fontSize:"1.45rem",margin:"2px 0"}}>{day.emoji} {day.day}'s plan</h2>
+          <p style={{margin:0,fontSize:".84rem",opacity:.72,lineHeight:1.45}}>
+            Week {plan.week} · {lessonCount} lesson{lessonCount===1?"":"s"} · {activityCount} activity slot{activityCount===1?"":"s"}
+          </p>
+        </div>
+        <div style={{display:"flex",gap:"4px",flexWrap:"wrap",justifyContent:"flex-end"}}>
+          {plan.days.map(d=>(
+            <button key={d.day} onClick={()=>onDaySelect?.(d.day)}
+              style={{border:`2px solid ${P.ink}`,borderRadius:"999px",padding:"4px 8px",background:d.day===day.day?P.ink:P.parch,color:d.day===day.day?P.cream:P.ink,fontSize:".72rem",fontWeight:800}}>
+              {d.emoji} {d.day.slice(0,3)}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:"9px"}}>
+        {day.slots.map((slot,i)=>{
+          const isLesson=slot.kind==="lesson";
+          const isSaint=slot.s?.id==="saint";
+          const done=isLesson&&!isSaint&&child?.progress?.[slot.l.id]?.done;
+          const accent=isLesson ? slot.s.color : P.gold;
+          return (
+            <div key={`${slot.time}-${i}`} style={{border:`2px solid ${P.ink}`,borderRadius:"13px",padding:"11px",background:done?"rgba(45,90,39,.1)":P.parch}}>
+              <div style={{display:"flex",alignItems:"flex-start",gap:"10px"}}>
+                <div style={{minWidth:"68px",textAlign:"center",fontSize:".75rem",fontWeight:900,color:P.cream,background:accent,borderRadius:"9px",padding:"5px 6px",border:`2px solid ${P.ink}`}}>{slot.time}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:".68rem",fontWeight:800,textTransform:"uppercase",opacity:.55}}>{isLesson?(isSaint?"Saint of the Week":slot.s.name):"Activity / family plan"}</div>
+                  <div className="df" style={{fontSize:"1rem",lineHeight:1.25,margin:"2px 0"}}>{isLesson?slot.l.title:slot.title}</div>
+                  <p style={{fontSize:".84rem",lineHeight:1.6,opacity:.82,margin:"4px 0 8px"}}>{isLesson?slot.l.content:slot.note}</p>
+                  {isLesson&&slot.l.act&&(
+                    <div style={{background:P.cream,borderRadius:"9px",padding:"8px",fontSize:".8rem",lineHeight:1.5,marginBottom:"8px"}}>
+                      <span style={{fontWeight:900}}>Do this: </span>{slot.l.act}
+                    </div>
+                  )}
+                  <div style={{display:"flex",gap:"6px",flexWrap:"wrap",alignItems:"center"}}>
+                    {isLesson&&(
+                      <button onClick={()=>isSaint?onLesson("saint",slot.l.id,slot.l):onLesson(slot.s.id,slot.l.id)}
+                        style={{background:accent,color:P.cream,border:"none",borderRadius:"8px",padding:"5px 10px",fontSize:".76rem",fontWeight:800}}>
+                        Open full lesson →
+                      </button>
+                    )}
+                    {isLesson&&slot.l.vsearch&&(
+                      <a href={youtubeUrl(slot.l.vsearch)} target="_blank" rel="noopener noreferrer"
+                        style={{display:"inline-flex",alignItems:"center",gap:"4px",color:P.rose,fontSize:".76rem",fontWeight:800,textDecoration:"none"}}>
+                        <Play size={11}/> Watch
+                      </a>
+                    )}
+                    {isLesson&&slot.l.res&&(
+                      <a href={slot.l.res} target="_blank" rel="noopener noreferrer"
+                        style={{display:"inline-flex",alignItems:"center",gap:"4px",color:P.sky,fontSize:".76rem",fontWeight:800,textDecoration:"none"}}>
+                        <BookMarked size={11}/> Resource
+                      </a>
+                    )}
+                  </div>
+                </div>
+                {isLesson&&!isSaint&&(
+                  <button onClick={()=>onToggle(slot.l.id)} style={{background:"none",border:"none",color:done?P.forest:P.ink,opacity:done?1:.25,flexShrink:0}}>
+                    {done?<CheckCircle2 size={22}/>:<Circle size={22}/>}
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -2742,6 +2825,7 @@ function Dashboard({child,curWeek,weekPlans,onLesson,onSubject,onToggle,onEdit,o
   const plan = weekPlans[curWeek];
   const monthSaint = SAINTS[new Date().getMonth()];
   const weekKey=`week-${plan.week}`;
+  const [selectedDay,setSelectedDay]=useState(currentPlanDay());
 
   const greeting=(()=>{const h=new Date().getHours();return h<12?"Good morning":h<18?"Kia ora":"Good evening";})();
 
@@ -2780,7 +2864,8 @@ function Dashboard({child,curWeek,weekPlans,onLesson,onSubject,onToggle,onEdit,o
         </div>
       </div>
 
-      <WeeklyScheduleCard plan={plan} child={child} onLesson={onLesson} onToggle={onToggle} compact />
+      <DayScheduleCard plan={plan} dayName={selectedDay} child={child} onLesson={onLesson} onToggle={onToggle} onDaySelect={setSelectedDay} />
+      <WeeklyScheduleCard plan={plan} child={child} onLesson={onLesson} onToggle={onToggle} compact selectedDay={selectedDay} onDaySelect={setSelectedDay} />
       <FamilyEnrichmentCard enrichment={plan.enrichment} />
       <ExtraActivitiesPanel child={child} weekKey={weekKey} onAdd={onAddExtra} onToggle={onToggleExtra} onDelete={onDeleteExtra} />
 
@@ -2828,6 +2913,7 @@ function Dashboard({child,curWeek,weekPlans,onLesson,onSubject,onToggle,onEdit,o
 // ─── SCHEDULE VIEW ──────────────────────────────────────────────────────────
 function ScheduleView({child,curWeek,weekPlans,onLesson,onToggle}){
   const [selWk,setSelWk]=useState(curWeek);
+  const [selectedDay,setSelectedDay]=useState(currentPlanDay());
   const plan=weekPlans[selWk];
 
   return (
@@ -2850,7 +2936,8 @@ function ScheduleView({child,curWeek,weekPlans,onLesson,onToggle}){
         </div>
       </div>
 
-      <WeeklyScheduleCard plan={plan} child={child} onLesson={onLesson} onToggle={onToggle} />
+      <DayScheduleCard plan={plan} dayName={selectedDay} child={child} onLesson={onLesson} onToggle={onToggle} onDaySelect={setSelectedDay} />
+      <WeeklyScheduleCard plan={plan} child={child} onLesson={onLesson} onToggle={onToggle} selectedDay={selectedDay} onDaySelect={setSelectedDay} />
       {selWk===curWeek&&<span style={{alignSelf:"flex-start",background:P.byz,color:P.cream,borderRadius:"999px",padding:"2px 8px",fontSize:".72rem",fontWeight:700}}>← This week</span>}
       <FamilyEnrichmentCard enrichment={plan.enrichment} />
     </div>
